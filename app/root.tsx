@@ -6,10 +6,16 @@ import {
   Scripts,
   ScrollRestoration,
 } from "remix";
+
+import type { ColorScheme } from "@mantine/core";
+import { MantineProvider, ColorSchemeProvider } from "@mantine/core";
+
+import { useState } from "react";
+
 import type { MetaFunction } from "remix";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "New Remix Mantine App" };
 };
 
 export default function App() {
@@ -22,11 +28,35 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <MantineTheme>
+          <Outlet />
+        </MantineTheme>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+function MantineTheme({ children }: { children: React.ReactNode }) {
+  const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
+  return (
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
+    >
+      <MantineProvider
+        theme={{ colorScheme }}
+        withNormalizeCSS
+        withGlobalStyles
+      >
+        {children}
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
 }
